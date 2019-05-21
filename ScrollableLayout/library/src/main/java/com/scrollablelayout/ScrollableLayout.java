@@ -4,7 +4,7 @@ package com.scrollablelayout;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -18,7 +18,6 @@ import android.widget.Scroller;
  */
 public class ScrollableLayout extends LinearLayout {
 
-    private Context context;
     private Scroller mScroller;
     private float mDownX;
     private float mDownY;
@@ -42,7 +41,6 @@ public class ScrollableLayout extends LinearLayout {
 
     private DIRECTION mDirection;
     private int mHeadHeight;
-    private int mScrollY;
     private int sysVersion;
     private boolean flag1, flag2;
     private int mLastScrollerY;
@@ -84,7 +82,6 @@ public class ScrollableLayout extends LinearLayout {
 
     public ScrollableLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.context = context;
         mHelper = new ScrollableHelper();
         mScroller = new Scroller(context);
         final ViewConfiguration configuration = ViewConfiguration.get(context);
@@ -114,7 +111,7 @@ public class ScrollableLayout extends LinearLayout {
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             View childAt = getChildAt(i);
-            if (childAt != null && childAt instanceof ViewPager) {
+            if (childAt instanceof ViewPager) {
                 childViewPager = (ViewPager) childAt;
             }
         }
@@ -142,7 +139,6 @@ public class ScrollableLayout extends LinearLayout {
                 mDownY = currentY;
                 mLastX = currentX;
                 mLastY = currentY;
-                mScrollY = getScrollY();
                 checkIsClickHead((int) currentY, mHeadHeight, getScrollY());
                 initOrResetVelocityTracker();
                 mVelocityTracker.addMovement(ev);
@@ -337,9 +333,6 @@ public class ScrollableLayout extends LinearLayout {
     }
 
     public boolean isCanPullToRefresh() {
-        if (getScrollY() <= 0 && mHelper.isTop() && !mIsHorizontalScrolling) {
-            return true;
-        }
-        return false;
+        return getScrollY() <= 0 && mHelper.isTop() && !mIsHorizontalScrolling;
     }
 }
