@@ -2,13 +2,14 @@ package com.scrollablelayout;
 
 
 import android.annotation.SuppressLint;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ScrollView;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 public class ScrollableHelper {
 
@@ -65,7 +66,20 @@ public class ScrollableHelper {
 
     private static boolean isRecyclerViewTop(RecyclerView recyclerView) {
         if (recyclerView != null) {
-            return recyclerView.canScrollVertically(-1);
+            RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+            if (layoutManager instanceof LinearLayoutManager) {
+                int firstVisibleItemPosition = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+                View childAt = recyclerView.getChildAt(0);
+                if (childAt == null) {
+                    return true;
+                }
+                if (firstVisibleItemPosition == 0) {
+                    ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) childAt.getLayoutParams();
+                    int topMargin = lp.topMargin;
+                    int top = childAt.getTop();
+                    return top >= topMargin;
+                }
+            }
         }
         return false;
     }
@@ -110,7 +124,7 @@ public class ScrollableHelper {
         } else if (scrollableView instanceof RecyclerView) {
             ((RecyclerView) scrollableView).fling(0, velocityY);
         } else if (scrollableView instanceof WebView) {
-            ((WebView) scrollableView).flingScroll(0, velocityY);
+            ((WebView)scrollableView).flingScroll(0,velocityY);
         }
     }
 }
